@@ -8,6 +8,7 @@
 - 公開憑證：[buds-jump-assistant-release-certificate.pem](signing/buds-jump-assistant-release-certificate.pem)
 - 首個正式簽章 APK SHA-256：`1521ff3653d004c39e70560b37f25a0eefabf87488e514cd741215870849ba3d`
 - `1.0.0-test2` APK SHA-256：`67071d97d1cab870cc0983fc786cfb4faaf479d0509d6811d745a6e77405edb2`
+- `1.0.0-test3` APK SHA-256：`1795b0e8f936911b72c77098d847456d447bc0d04580f2e89ae6ac518959fb7b`
 
 在 APK 安裝或對外散布前，App 擁有者仍須把 keystore 與密碼恢復方式保存成至少兩份加密離線備份。這是目前尚未完成的 release gate。
 

@@ -5,7 +5,7 @@
 ## 產品行為
 
 - App 顯示名稱為「Buds 跳轉助理」，套件名稱為 `com.example.budscapabilityprobe`。
-- 首版為繁體中文，`minSdk=36`；目前測試版為 `versionCode=16`、`versionName=1.0.0-test2`。
+- 首版為繁體中文，`minSdk=36`；目前測試版為 `versionCode=17`、`versionName=1.0.0-test3`。
 - 使用者可選快進或倒退，以及 10～60 秒的十倍數秒數；預設快進 10 秒。
 - 任一耳設為數位助理後都執行同一組全域設定。App 不辨識左右耳。
 - 每個收到的 `VOICE_COMMAND` 執行一次，不使用時間式去重。

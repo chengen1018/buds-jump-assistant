@@ -11,8 +11,8 @@ android {
         applicationId = "com.example.budscapabilityprobe"
         minSdk = 36
         targetSdk = 37
-        versionCode = 16
-        versionName = "1.0.0-test2"
+        versionCode = 17
+        versionName = "1.0.0-test3"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
