@@ -1,6 +1,5 @@
 package com.example.budscapabilityprobe
 
-import android.app.role.RoleManager
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -36,7 +35,7 @@ class MainActivity : ComponentActivity() {
                     openNotificationAccess = {
                         startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
                     },
-                    requestAssistantRole = ::requestAssistantRole,
+                    openPhoneSettings = ::openPhoneSettings,
                 )
             }
         }
@@ -47,14 +46,7 @@ class MainActivity : ComponentActivity() {
         requirements = SystemRequirements.snapshot(this)
     }
 
-    private fun requestAssistantRole() {
-        val roleManager = getSystemService(RoleManager::class.java)
-        val intent = if (roleManager?.isRoleAvailable(RoleManager.ROLE_ASSISTANT) == true) {
-            roleManager.createRequestRoleIntent(RoleManager.ROLE_ASSISTANT)
-        } else {
-            Intent(Settings.ACTION_VOICE_INPUT_SETTINGS)
-        }
-        startActivity(intent)
+    private fun openPhoneSettings() {
+        startActivity(Intent(Settings.ACTION_SETTINGS))
     }
 }
-

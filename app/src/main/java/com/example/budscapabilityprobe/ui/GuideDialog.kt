@@ -32,30 +32,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.launch
 
-private data class GuidePage(
-    val title: String,
-    val body: String,
-)
-
-private val GUIDE_PAGES = listOf(
-    GuidePage(
-        title = "開啟耳機設定",
-        body = "打開 Samsung「設定」，點選頁面上方已連線的 Galaxy Buds3 Pro。",
-    ),
-    GuidePage(
-        title = "找到長按操控",
-        body = "進入「耳機操控」，並找到「長按操控選項」。",
-    ),
-    GuidePage(
-        title = "指定數位助理",
-        body = "建議一耳選擇「切換噪音操控」，另一耳選擇「數位助理」並將本 App 設為預設數位輔助應用程式。捏住數位助理那一耳時，本 App 會依首頁設定快進或倒退 YouTube。",
-    ),
-)
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun GuideDialog(onDismiss: () -> Unit) {
-    val pagerState = rememberPagerState(pageCount = { GUIDE_PAGES.size })
+fun GuideDialog(
+    onDismiss: () -> Unit,
+    onOpenSettings: () -> Unit,
+    showDismissButton: Boolean = true,
+) {
+    val pagerState = rememberPagerState(pageCount = { GuideContent.pages.size })
     val scope = rememberCoroutineScope()
     Dialog(onDismissRequest = onDismiss) {
         Column(
@@ -72,7 +56,9 @@ fun GuideDialog(onDismiss: () -> Unit) {
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f),
                 )
-                TextButton(onClick = onDismiss) { Text("×", fontSize = 28.sp) }
+                if (showDismissButton) {
+                    TextButton(onClick = onDismiss) { Text("×", fontSize = 28.sp) }
+                }
             }
             Spacer(Modifier.height(16.dp))
             HorizontalPager(
@@ -81,7 +67,7 @@ fun GuideDialog(onDismiss: () -> Unit) {
                     .fillMaxWidth()
                     .height(340.dp),
             ) { pageIndex ->
-                val page = GUIDE_PAGES[pageIndex]
+                val page = GuideContent.pages[pageIndex]
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -118,7 +104,7 @@ fun GuideDialog(onDismiss: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
             ) {
-                GUIDE_PAGES.indices.forEach { index ->
+                GuideContent.pages.indices.forEach { index ->
                     Box(
                         modifier = Modifier
                             .padding(4.dp)
@@ -135,6 +121,7 @@ fun GuideDialog(onDismiss: () -> Unit) {
                 }
             }
             Spacer(Modifier.height(18.dp))
+            val currentPage = GuideContent.pages[pagerState.currentPage]
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -150,16 +137,15 @@ fun GuideDialog(onDismiss: () -> Unit) {
                 }
                 Button(
                     onClick = {
-                        if (pagerState.currentPage == GUIDE_PAGES.lastIndex) {
-                            onDismiss()
-                        } else {
-                            scope.launch {
+                        when (currentPage.action) {
+                            GuidePageAction.OPEN_SETTINGS -> onOpenSettings()
+                            GuidePageAction.NEXT -> scope.launch {
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
                             }
                         }
                     },
                 ) {
-                    Text(if (pagerState.currentPage == GUIDE_PAGES.lastIndex) "完成" else "下一頁")
+                    Text(currentPage.actionLabel)
                 }
             }
         }

@@ -23,6 +23,24 @@
 
 Debug APK：`app/build/outputs/apk/debug/app-debug.apk`
 
+### UI 快速迭代
+
+UI 使用 Jetpack Compose。`debug` 變體會使用套件名稱
+`com.example.budscapabilityprobe.debug`，可與正式版同時安裝；它只供 UI
+預覽與實機迭代，不取代正式版的數位助理設定。
+
+在 Android Studio 中選擇 `app` 的 `debug` 變體並執行一次後，可使用 Compose
+Preview 檢查 `HomeScreenPreview`，再用 Live Edit 將 `HomeScreen.kt`、
+`GuideDialog.kt` 或主題修改即時送到手機。若修改需要重新啟動 Activity，使用
+Apply Changes。UI 確認完成後，才建立正式簽章 APK。
+
+```bash
+./gradlew :app:installDebug
+```
+
+`installDebug` 會安裝 Debug 迭代版本，不會覆蓋目前正式版。Debug 版本的助理角色
+與通知存取權是獨立設定；正式功能驗證仍使用正式 APK。
+
 正式簽章金鑰與密碼不得提交到 repository。發行流程記錄在 `docs/release-signing.md`。
 
 ## 安裝
@@ -38,4 +56,3 @@ Debug APK：`app/build/outputs/apk/debug/app-debug.apk`
 ## 隱私
 
 Android 的通知存取權涵蓋通知內容；本 App 僅使用其授權資格查詢 MediaSession，不讀取、保存或傳送通知內容。App 不宣告網路權限，不收集分析資料，只保存跳轉方向與秒數。
-

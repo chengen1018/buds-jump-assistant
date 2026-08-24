@@ -2,8 +2,10 @@ package com.example.budscapabilityprobe.ui
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -14,11 +16,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,9 +32,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
@@ -42,6 +50,7 @@ import kotlin.math.roundToInt
 fun HomeScreen(
     initialSettings: JumpSettings,
     saveSettings: (JumpSettings) -> Unit,
+    openPhoneSettings: () -> Unit,
 ) {
     val controller = remember { HomeSettingsController(initialSettings, saveSettings) }
     var settings by remember { mutableStateOf(controller.current) }
@@ -50,7 +59,7 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 20.dp, vertical = 28.dp),
+            .padding(start = 20.dp, top = 52.dp, end = 20.dp, bottom = 28.dp),
     ) {
         Text(
             text = "Buds 跳轉助理",
@@ -75,7 +84,13 @@ fun HomeScreen(
     }
 
     if (showGuide) {
-        GuideDialog(onDismiss = { showGuide = false })
+        HomeHelpScreen(
+            onBack = { showGuide = false },
+            onOpenSettings = {
+                showGuide = false
+                openPhoneSettings()
+            },
+        )
     }
 }
 
@@ -197,31 +212,142 @@ private fun DirectionOption(
     }
 }
 
+private val secondsSliderTrackInset = 10.dp
+internal val secondsSliderThumbColor = Color(0xFF203A8F)
+
 @Composable
 private fun SecondsSlider(seconds: Int, onSeconds: (Int) -> Unit) {
-    val selectedIndex = JumpSettings.ALLOWED_SECONDS.indexOf(seconds).coerceAtLeast(0)
-    Slider(
-        value = selectedIndex.toFloat(),
-        onValueChange = { index ->
-            onSeconds(JumpSettings.ALLOWED_SECONDS[index.roundToInt().coerceIn(0, 5)])
-        },
-        valueRange = 0f..5f,
-        steps = 4,
-        modifier = Modifier.fillMaxWidth(),
-    )
-    Row(
+    val values = JumpSettings.ALLOWED_SECONDS
+    val selectedIndex = values.indexOf(seconds).coerceAtLeast(0)
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 10.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+            .height(48.dp),
     ) {
-        JumpSettings.ALLOWED_SECONDS.forEach { value ->
-            Text(
-                text = value.toString(),
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+        val trackWidth = (maxWidth - secondsSliderTrackInset * 2).coerceAtLeast(0.dp)
+        val selectedFraction = secondsSliderCenterFraction(selectedIndex, values.size)
+        val density = LocalDensity.current
+        val trackInsetPx = with(density) { secondsSliderTrackInset.toPx() }
+        val trackWidthPx = with(density) { trackWidth.toPx() }
+
+        fun selectAt(positionX: Float) {
+            val fraction = if (trackWidthPx == 0f) {
+                0f
+            } else {
+                (positionX - trackInsetPx) / trackWidthPx
+            }
+            onSeconds(values[secondsSliderIndexForFraction(fraction, values.size)])
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(trackWidthPx, onSeconds) {
+                    detectTapGestures { position -> selectAt(position.x) }
+                }
+                .pointerInput(trackWidthPx, onSeconds) {
+                    detectDragGestures(
+                        onDragStart = { position -> selectAt(position.x) },
+                        onDrag = { change, _ ->
+                            selectAt(change.position.x)
+                        },
+                    )
+                },
+        ) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(horizontal = secondsSliderTrackInset)
+                    .fillMaxWidth()
+                    .height(8.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
             )
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = secondsSliderTrackInset)
+                    .width(trackWidth * selectedFraction)
+                    .height(8.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.primary),
+            )
+            values.forEachIndexed { index, _ ->
+                val centerX = secondsSliderTrackInset +
+                    trackWidth * secondsSliderCenterFraction(index, values.size)
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .offset(x = centerX - 2.dp)
+                        .size(4.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (index <= selectedIndex) {
+                                MaterialTheme.colorScheme.onPrimary
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.55f)
+                            },
+                        ),
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .offset(
+                        x = secondsSliderTrackInset +
+                            trackWidth * selectedFraction - 15.dp,
+                    )
+                    .size(30.dp)
+                    .shadow(3.dp, CircleShape)
+                    .background(secondsSliderThumbColor, CircleShape)
+                    .border(2.dp, Color.White, CircleShape),
+            )
+        }
+    }
+    SecondsSliderLabels(values)
+}
+
+internal fun secondsSliderCenterFraction(index: Int, itemCount: Int): Float {
+    require(itemCount > 1) { "At least two slider labels are required" }
+    require(index in 0 until itemCount) { "Slider label index is out of bounds" }
+    return index.toFloat() / (itemCount - 1)
+}
+
+internal fun secondsSliderIndexForFraction(fraction: Float, itemCount: Int): Int {
+    require(itemCount > 1) { "At least two slider labels are required" }
+    return (fraction.coerceIn(0f, 1f) * (itemCount - 1)).roundToInt()
+}
+
+@Composable
+private fun SecondsSliderLabels(values: List<Int>) {
+    Layout(
+        content = {
+            values.forEach { value ->
+                Text(
+                    text = value.toString(),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(32.dp),
+    ) { measurables, constraints ->
+        val placeables = measurables.map { it.measure(Constraints()) }
+        val layoutWidth = constraints.maxWidth
+        val layoutHeight = constraints.minHeight
+        val trackInset = secondsSliderTrackInset.roundToPx()
+        val trackWidth = (layoutWidth - trackInset * 2).coerceAtLeast(0)
+
+        layout(layoutWidth, layoutHeight) {
+            placeables.forEachIndexed { index, placeable ->
+                val centerX = trackInset +
+                    (trackWidth * secondsSliderCenterFraction(index, placeables.size)).toInt()
+                placeable.placeRelative(
+                    x = centerX - placeable.width / 2,
+                    y = (layoutHeight - placeable.height) / 2,
+                )
+            }
         }
     }
 }

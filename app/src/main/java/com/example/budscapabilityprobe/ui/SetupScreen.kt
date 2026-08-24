@@ -21,10 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.budscapabilityprobe.setup.SetupStep
 
 @Composable
-fun SetupScreen(step: SetupStep, onContinue: () -> Unit) {
+fun SetupScreen(onContinue: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -47,27 +46,13 @@ fun SetupScreen(step: SetupStep, onContinue: () -> Unit) {
                     fontWeight = FontWeight.Bold,
                 )
                 Spacer(Modifier.height(28.dp))
-                when (step) {
-                    SetupStep.NOTIFICATION_ACCESS -> {
-                        Text("允許通知存取權", fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                        Spacer(Modifier.height(12.dp))
-                        Text(
-                            text = "Android 的通知存取權涵蓋通知內容；本 App 僅使用其授權資格查詢 MediaSession，不讀取、保存或傳送通知內容。",
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    SetupStep.DEFAULT_ASSISTANT -> {
-                        Text("設為預設數位助理", fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                        Spacer(Modifier.height(12.dp))
-                        Text(
-                            text = "耳機的數位助理長按會交給本 App。完成後，再依說明設定 Galaxy Buds3 Pro 的長按操控。",
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    SetupStep.COMPLETE -> Unit
-                }
+                Text("允許通知存取權", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text = "Android 的通知存取權涵蓋通知內容；本 App 僅使用其授權資格查詢 MediaSession，不讀取、保存或傳送通知內容。",
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
                 Spacer(Modifier.height(28.dp))
                 Button(
                     modifier = Modifier.fillMaxWidth(),
@@ -79,4 +64,3 @@ fun SetupScreen(step: SetupStep, onContinue: () -> Unit) {
         }
     }
 }
-
