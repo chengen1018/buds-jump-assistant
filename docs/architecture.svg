@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="690" viewBox="0 0 1200 690" role="img" aria-labelledby="title desc">
+  <title id="title">Buds 跳轉助理架構圖</title>
+  <desc id="desc">Galaxy Buds3 Pro 長按數位助理手勢，由 Android 傳送 VOICE_COMMAND 給 App；App 檢查權限、讀取設定、選擇官方 YouTube 的 MediaSession，最後呼叫 seekTo。首頁設定儲存在手機，通知存取權提供查詢 MediaSession 的資格。</desc>
+  <defs>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif; }
+      .title { fill: #10233f; font-size: 34px; font-weight: 700; }
+      .subtitle { fill: #53647c; font-size: 17px; }
+      .section { fill: #55718f; font-size: 13px; font-weight: 700; letter-spacing: 2px; }
+      .card-title { fill: #10233f; font-size: 23px; font-weight: 700; }
+      .card-sub { fill: #53647c; font-size: 15px; }
+      .body { fill: #223956; font-size: 17px; }
+      .small { fill: #53647c; font-size: 14px; }
+      .chip { fill: #174269; font-size: 14px; font-weight: 650; }
+      .step { fill: #087c92; font-size: 14px; font-weight: 700; }
+      .note { fill: #385370; font-size: 15px; }
+    </style>
+    <filter id="shadow" x="-20%" y="-30%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="6" stdDeviation="11" flood-color="#123456" flood-opacity=".09"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#367aa0"/>
+    </marker>
+    <marker id="arrow-soft" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#91a9bb"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="690" rx="28" fill="#f8fbfe"/>
+  <path d="M 0 118 H 1200" stroke="#e6eef5"/>
+  <text x="54" y="62" class="title">一個長按手勢，如何變成影片跳轉</text>
+  <text x="54" y="93" class="subtitle">Buds 跳轉助理 · 架構概覽</text>
+
+  <text x="54" y="151" class="section">每次長按</text>
+
+  <path d="M 364 304 H 417" fill="none" stroke="#367aa0" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M 782 304 H 835" fill="none" stroke="#367aa0" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <g filter="url(#shadow)">
+    <rect x="54" y="177" width="310" height="260" rx="22" fill="#ffffff" stroke="#d9e7f1"/>
+    <rect x="418" y="177" width="364" height="260" rx="22" fill="#ffffff" stroke="#beddeb" stroke-width="1.5"/>
+    <rect x="836" y="177" width="310" height="260" rx="22" fill="#ffffff" stroke="#d9e7f1"/>
+  </g>
+
+  <circle cx="91" cy="217" r="21" fill="#e6f5fa"/>
+  <path d="M 85 209 C 80 209 77 214 77 219 C 77 224 80 227 84 227 M 91 207 C 97 208 101 213 101 219 C 101 224 98 227 94 228 L 93 232" fill="none" stroke="#087c92" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M 85 209 C 88 208 91 211 91 214 V 222 C 91 225 89 227 86 227" fill="none" stroke="#087c92" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="124" y="225" class="card-title">耳機與 Android</text>
+  <text x="82" y="264" class="card-sub">Galaxy Buds3 Pro</text>
+  <rect x="80" y="286" width="246" height="41" rx="12" fill="#eef6fb"/>
+  <text x="98" y="312" class="body">長按「數位助理」</text>
+  <path d="M 98 350 V 371" stroke="#9bb3c5" stroke-width="2" marker-end="url(#arrow-soft)"/>
+  <text x="116" y="374" class="chip">VOICE_COMMAND</text>
+  <text x="82" y="409" class="small">系統將手勢交給預設助理 App</text>
+
+  <circle cx="455" cy="217" r="21" fill="#dff6f7"/>
+  <rect x="447" y="206" width="16" height="22" rx="4" fill="none" stroke="#087c92" stroke-width="2.5"/>
+  <path d="M 452 222 H 458" stroke="#087c92" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="488" y="225" class="card-title">Buds 跳轉助理</text>
+  <text x="446" y="264" class="card-sub">AssistantBridgeActivity → Media Gateway</text>
+  <circle cx="457" cy="303" r="11" fill="#e6f5fa"/><text x="453" y="308" class="step">1</text>
+  <text x="478" y="309" class="body">確認助理角色與通知存取權</text>
+  <circle cx="457" cy="347" r="11" fill="#e6f5fa"/><text x="452" y="352" class="step">2</text>
+  <text x="478" y="353" class="body">讀取方向、秒數與播放位置</text>
+  <circle cx="457" cy="391" r="11" fill="#e6f5fa"/><text x="452" y="396" class="step">3</text>
+  <text x="478" y="397" class="body">選擇官方 YouTube 工作階段</text>
+
+  <circle cx="873" cy="217" r="21" fill="#eaf1fe"/>
+  <rect x="864" y="207" width="19" height="20" rx="5" fill="none" stroke="#3766b0" stroke-width="2.5"/>
+  <path d="M 872 212 L 879 217 L 872 222 Z" fill="#3766b0"/>
+  <text x="906" y="225" class="card-title">YouTube 播放</text>
+  <text x="864" y="264" class="card-sub">官方 App 的 MediaSession</text>
+  <rect x="864" y="291" width="254" height="77" rx="14" fill="#eef4fc"/>
+  <text x="884" y="320" class="chip">seekTo(目標時間)</text>
+  <text x="884" y="349" class="body">快進／倒退 10–60 秒</text>
+  <text x="864" y="409" class="small">找不到可控制工作階段時安靜結束</text>
+
+  <text x="54" y="488" class="section">事先設定</text>
+  <rect x="54" y="510" width="310" height="91" rx="18" fill="#eaf4fb"/>
+  <text x="80" y="547" class="chip">首頁設定</text>
+  <text x="80" y="574" class="small">快進／倒退 · 10–60 秒</text>
+  <rect x="418" y="510" width="364" height="91" rx="18" fill="#eaf4fb"/>
+  <text x="444" y="547" class="chip">儲存在手機</text>
+  <text x="444" y="574" class="small">SharedPreferences，觸發時讀取</text>
+  <rect x="836" y="510" width="310" height="91" rx="18" fill="#eaf4fb"/>
+  <text x="862" y="547" class="chip">通知存取權</text>
+  <text x="862" y="574" class="small">讓 App 查詢 MediaSession</text>
+  <path d="M 364 555 H 408" fill="none" stroke="#91a9bb" stroke-width="2" marker-end="url(#arrow-soft)"/>
+  <path d="M 600 510 V 454" fill="none" stroke="#91a9bb" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#arrow-soft)"/>
+  <path d="M 990 510 V 471 H 742 V 454" fill="none" stroke="#91a9bb" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#arrow-soft)"/>
+
+  <path d="M 54 631 H 1146" stroke="#dce8f0"/>
+  <circle cx="70" cy="657" r="5" fill="#087c92"/>
+  <text x="88" y="663" class="note">App 不直接連接耳機；Galaxy Wearable 仍負責耳機設定。</text>
+</svg>
