@@ -1,53 +1,45 @@
 # Buds 跳轉助理
 
-「Buds 跳轉助理」讓 Galaxy Buds3 Pro 的長按「數位助理」手勢控制官方 YouTube App 的一般影片。捏住已設定的耳機後，影片會依首頁設定快進或倒退指定秒數。
+用 Galaxy Buds3 Pro 長按耳機，就能快進或倒退 YouTube 影片。將耳機的長按動作設為「數位助理」後，App 會依你在首頁選擇的方向與秒數跳轉；可選 10、20、30、40、50 或 60 秒。設定完成後，使用時不必開啟 App。
 
-## 下載正式版
+本專案支援 Android 16 以上裝置，以及官方 YouTube App 的一般影片。
 
-目前正式版：**1.0.0**（Android 16）
+## 下載與安裝
 
-[下載正式簽名 APK](https://github.com/chengen1018/buds-jump-assistant/releases/latest/download/Buds-Jump-Assistant.apk)
+[下載最新正式版 APK](https://github.com/chengen1018/buds-jump-assistant/releases/latest/download/Buds-Jump-Assistant.apk)，然後在 Android 手機上開啟 APK 安裝。
 
-下載後直接在 Android 手機上開啟 APK，即可依畫面安裝。這個檔案是正式版，不是 Debug 測試版。
+## 初次設定
 
-## 第一次使用
+1. 連接 Galaxy Buds3 Pro，開啟 Buds 跳轉助理。
+2. 依 App 提示授予「通知存取權」。這讓 App 能查詢 Android 的媒體播放工作階段。
+3. 依 App 內導覽前往手機設定，找到 Galaxy Buds3 Pro 的「耳機操控」→「長按操控選項」。
+4. 將要使用的左側或右側耳機設為「數位助理」，再點旁邊的齒輪，選擇「Buds 跳轉助理」。可只設定一側，也可設定兩側。
+5. 回到 App 首頁，選擇快進或倒退，以及每次跳轉的秒數。設定會立即儲存。
 
-1. 將 Galaxy Buds3 Pro 連接到手機。
-2. 開啟 App，依畫面提示授予「通知存取權」。App 只用這項資格尋找可控制的 YouTube MediaSession，不讀取或保存通知內容。
-3. 依五頁導覽開啟手機設定。請在手機設定中找到已連線的 Galaxy Buds3 Pro，再進入「耳機操控」→「長按操控選項」。
-4. 選擇左側或右側耳機的「數位助理」，再按旁邊的齒輪，選擇「Buds 跳轉助理」。
-5. 可以只設定一側，也可以左右兩側都設定。沒有使用跳轉功能時，將兩側改回「切換噪音操控」即可。
+播放 YouTube 一般影片時，長按已設定的耳機即可跳轉。不使用時，可以在耳機設定中把長按動作改回原本的功能。
 
-完成後，回到 App 首頁設定方向與秒數。設定會立即保存，不需要另外按「套用」。
+## 如何運作
 
-## 日常使用
+![Buds 跳轉助理架構圖](docs/architecture.svg)
 
-- 在首頁選擇「快進」或「倒退」。
-- 將秒數設為 10、20、30、40、50 或 60 秒。
-- 在 YouTube 播放一般影片時，捏住已設定為「數位助理」的耳機。
-- 只要 YouTube 提供可控制的 MediaSession，App 就會執行跳轉；找不到安全的控制方式時會安靜結束。
-- 平常不需要開啟 App，也不需要讓 App 連接耳機。
+耳機的長按動作先由 Android 系統交給預設數位助理。App 收到 `VOICE_COMMAND` 後，讀取你的跳轉設定，透過 Android 的 `MediaSession` 找到官方 YouTube App 的播放工作階段，再呼叫 `seekTo()` 移動播放位置。App 不直接連接耳機；耳機設定仍由 Galaxy Wearable 與手機系統管理。
 
 ## 支援範圍
 
-正式支援官方 YouTube App 的一般影片，包括背景播放與關閉螢幕時仍存在的可控制 MediaSession。
+- 支援官方 YouTube App 的一般影片。背景播放或關閉螢幕時，仍須有可控制的 YouTube 播放工作階段。
+- Shorts、Cast、廣告播放期間與 YouTube Music 不在正式支援範圍內。
+- 找不到可控制的播放工作階段時，App 會直接結束這次操作，不顯示錯誤畫面。耳機的提示音只代表系統收到長按動作，不一定代表影片已跳轉。
 
-以下情況不列入正式保證：YouTube Shorts、Cast、廣告播放期間及 YouTube Music。App 不使用 Buds 的 BAS／SPP 連線，不要求藍牙權限，也不會與 Galaxy Wearable 搶耳機連線。
+## 隱私
 
-耳機或 Samsung 系統發出的提示音只代表長按手勢已被接收，不代表影片一定成功跳轉。
+App 不要求藍牙或網路權限，也不收集分析資料。跳轉方向與秒數只儲存在手機上。通知存取權用於查詢 Android 的媒體播放工作階段；App 不讀取或儲存通知內容。
 
-## 開發者資訊
+## 開發
 
-專案使用 Jetpack Compose，需求為 JDK 21 與 Android SDK 37。執行測試、Lint 與 Debug 建置：
+專案使用 Kotlin 與 Jetpack Compose。建置需要 JDK 21 和 Android SDK 37。執行單元測試、Lint 與 Debug 建置：
 
 ```bash
 ./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
 ```
 
-Debug APK 位於 `app/build/outputs/apk/debug/app-debug.apk`。Debug 版本使用套件名稱 `com.example.budscapabilityprobe.debug`，可與正式版同時安裝，只供 UI 與實機迭代，不取代正式版的數位助理設定。
-
-正式版建置與簽章規則請參閱 [`docs/release-signing.md`](docs/release-signing.md)。正式私鑰、密碼與 `signing.properties` 不得提交到 repository。
-
-## 隱私
-
-App 不宣告網路權限、不收集分析資料，只保存使用者設定的跳轉方向與秒數。通知存取權僅用於取得 Android 提供的 MediaSession 查詢資格；通知內容不會被讀取、保存或傳送。
+Debug APK 位於 `app/build/outputs/apk/debug/app-debug.apk`，套件名稱為 `com.example.budscapabilityprobe.debug`，可與正式版同時安裝。正式版簽章方式見 [發布簽章說明](docs/release-signing.md)。
